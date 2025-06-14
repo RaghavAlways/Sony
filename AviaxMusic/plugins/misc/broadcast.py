@@ -1,6 +1,9 @@
-import asyncio
 
+import asyncio
+import os
+import time
 from pyrogram import filters
+from pyrogram.types import Message
 from pyrogram.enums import ChatMembersFilter
 from pyrogram.errors import FloodWait
 
@@ -15,79 +18,18 @@ from AviaxMusic.utils.database import (
 )
 from AviaxMusic.utils.decorators.language import language
 from AviaxMusic.utils.formatters import alpha_to_int
-from config import adminlist
+from config import adminlist, CACHE_DURATION, CACHE_SLEEP ,file_cache, autoclean
 
 IS_BROADCASTING = False
 
 
 @app.on_message(filters.command("broadcast") & SUDOERS)
 @language
-async def braodcast_message(client, message, _):
+async def braodcast_message(client, message:Message, _):
     global IS_BROADCASTING
-
-    if "-wfchat" in message.text or "-wfuser" in message.text:
-        if not message.reply_to_message or not (message.reply_to_message.photo or message.reply_to_message.text):
-            return await message.reply_text("Please reply to a text or image message for broadcasting.")
-
-        # Extract data from the replied message
-        if message.reply_to_message.photo:
-            content_type = 'photo'
-            file_id = message.reply_to_message.photo.file_id
-        else:
-            content_type = 'text'
-            text_content = message.reply_to_message.text
-            
-        caption = message.reply_to_message.caption
-        reply_markup = message.reply_to_message.reply_markup if hasattr(message.reply_to_message, 'reply_markup') else None
-
-        IS_BROADCASTING = True
-        await message.reply_text(_["broad_1"])
-
-        if "-wfchat" in message.text or "-wfuser" in message.text:
-            # Broadcasting to chats
-            sent_chats = 0
-            chats = [int(chat["chat_id"]) for chat in await get_served_chats()]
-            for i in chats:
-                try:
-                    if content_type == 'photo':
-                        await app.send_photo(chat_id=i, photo=file_id, caption=caption, reply_markup=reply_markup)
-                    else:
-                        await app.send_message(chat_id=i, text=text_content, reply_markup=reply_markup)
-                    sent_chats += 1
-                    await asyncio.sleep(0.2)
-                except FloodWait as fw:
-                    await asyncio.sleep(fw.x)
-                except:
-                    continue
-            await message.reply_text(f"Broadcast to chats completed! Sent to {sent_chats} chats.")
-
-        if "-wfuser" in message.text:
-            # Broadcasting to users
-            sent_users = 0
-            users = [int(user["user_id"]) for user in await get_served_users()]
-            for i in users:
-                try:
-                    if content_type == 'photo':
-                        await app.send_photo(chat_id=i, photo=file_id, caption=caption, reply_markup=reply_markup)
-                    else:
-                        await app.send_message(chat_id=i, text=text_content, reply_markup=reply_markup)
-                    sent_users += 1
-                    await asyncio.sleep(0.2)
-                except FloodWait as fw:
-                    await asyncio.sleep(fw.x)
-                except:
-                    continue
-            await message.reply_text(f"Broadcast to users completed! Sent to {sent_users} users.")
-
-        IS_BROADCASTING = False
-        return
-
-    
     if message.reply_to_message:
         x = message.reply_to_message.id
         y = message.chat.id
-        reply_markup = message.reply_to_message.reply_markup if message.reply_to_message.reply_markup else None
-        content = None
     else:
         if len(message.command) < 2:
             return await message.reply_text(_["broad_2"])
@@ -118,7 +60,7 @@ async def braodcast_message(client, message, _):
         for i in chats:
             try:
                 m = (
-                    await app.copy_message(chat_id=i, from_chat_id=y, message_id=x, reply_markup=reply_markup)
+                    await app.forward_messages(i, y, x)
                     if message.reply_to_message
                     else await app.send_message(i, text=query)
                 )
@@ -157,7 +99,7 @@ async def braodcast_message(client, message, _):
         for i in served_users:
             try:
                 m = (
-                    await app.copy_message(chat_id=i, from_chat_id=y, message_id=x, reply_markup=reply_markup)
+                    await app.forward_messages(i, y, x)
                     if message.reply_to_message
                     else await app.send_message(i, text=query)
                 )
@@ -178,7 +120,7 @@ async def braodcast_message(client, message, _):
     if "-assistant" in message.text:
         aw = await message.reply_text(_["broad_5"])
         text = _["broad_6"]
-        from AviaxMusic.core.userbot import assistants
+        from AnonXMusic.core.userbot import assistants
 
         for num in assistants:
             sent = 0
@@ -226,5 +168,29 @@ async def auto_clean():
         except:
             continue
 
+
+async def auto_clean_cache():
+    """Periodically clean up expired files"""
+    while not await asyncio.sleep(CACHE_SLEEP):
+        try:
+            current_time = time.time()
+            expired_files = [
+                file_path
+                for file_path, last_access in file_cache.items()
+                if current_time - last_access > CACHE_DURATION
+                and file_path not in autoclean
+            ]
+            
+            for file_path in expired_files:
+                try:
+                    if os.path.exists(file_path):
+                        os.remove(file_path)
+                        file_cache.pop(file_path, None)
+                except:
+                    continue
+        except:
+            continue
+
+asyncio.create_task(auto_clean_cache())
 
 asyncio.create_task(auto_clean())
