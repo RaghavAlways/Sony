@@ -7,22 +7,22 @@ from pyrogram import filters
 load_dotenv()
 
 # Get this value from my.telegram.org/apps
-API_ID = int(getenv("API_ID"))
-API_HASH = getenv("API_HASH")
+API_ID = int(getenv("API_ID", "25619358"))
+API_HASH = getenv("API_HASH", "3a178d74b056ba890432a2e1dd5bc3b6")
 
 # Get your token from @BotFather on Telegram.
-BOT_TOKEN = getenv("BOT_TOKEN")
+BOT_TOKEN = getenv("BOT_TOKEN", "7469825671:AAGYle7eNv7ZAAtgIhI-njoORtZSIr-nUgU")
 
 # Get your mongo url from cloud.mongodb.com
-MONGO_DB_URI = getenv("MONGO_DB_URI", None)
+MONGO_DB_URI = getenv("MONGO_DB_URI", "mongodb+srv://Raghav23:Raghav23@cluster0.6nrx6.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 
 DURATION_LIMIT_MIN = int(getenv("DURATION_LIMIT", 1700))
 
 # Chat id of a group for logging bot's activities
-LOG_GROUP_ID = int(getenv("LOG_GROUP_ID", None))
+LOG_GROUP_ID = int(getenv("LOG_GROUP_ID", "-1002430579671"))
 
 # Get this value from @MissRose_Bot on Telegram by /id
-OWNER_ID = int(getenv("OWNER_ID", None))
+OWNER_ID = int(getenv("OWNER_ID", "2121966922"))
 
 ## Fill these variables if you're deploying on heroku.
 # Your heroku app name
@@ -32,15 +32,15 @@ HEROKU_API_KEY = getenv("HEROKU_API_KEY")
 
 UPSTREAM_REPO = getenv(
     "UPSTREAM_REPO",
-    "https://github.com/venompower/ROCKS6",
+    "https://github.com/venompower/ROCKS6"
 )
 UPSTREAM_BRANCH = getenv("UPSTREAM_BRANCH", "main")
 GIT_TOKEN = getenv(
     "GIT_TOKEN", None
 )  # Fill this variable if your upstream repository is private
 
-SUPPORT_CHANNEL = getenv("SUPPORT_CHANNEL", "https://t.me/ROCKS_ROBOTS")
-SUPPORT_GROUP = getenv("SUPPORT_GROUP", "https://t.me/+2HpAd1kBDRo1NzY1")
+SUPPORT_CHANNEL = getenv("SUPPORT_CHANNEL", "https://t.me/Inspired_network")
+SUPPORT_GROUP = getenv("SUPPORT_GROUP", "https://t.me/Inspired_network")
 
 # Set this to True if you want the assistant to automatically leave chats after an interval
 AUTO_LEAVING_ASSISTANT = bool(getenv("AUTO_LEAVING_ASSISTANT", False))
@@ -62,7 +62,7 @@ TG_VIDEO_FILESIZE_LIMIT = int(getenv("TG_VIDEO_FILESIZE_LIMIT", 2145386496))
 
 
 # Get your pyrogram v2 session from Replit
-STRING1 = getenv("STRING_SESSION", None)
+STRING1 = getenv("STRING_SESSION", "BQGG654Avz7hiGdb4FLPfW3nEnVGu3m8QkbMgF7dodx6affeAJxxpLYnxjSHYUzwj6CBlgwN4ExEUQFDIKvgSF1PWlXVnpjPBhkPGBpeDzi7lQ49Frjb4temgnicTEkFC07DKoSK3ttBKj2izELW49jvQCg9b3eO15B_B2R8K_YYjUeNDCojSPaznMwLp-4VoPT9gV4wqQQDwWEaSpf_yocmdX_shet9aJKidr6Cti0FGk9VjZsn9l7N2Gv9B4fvGvs1zRoGtKJtD0WsiVxTJMMMPp2s6ck5z3dQ-amdYkGDmZab13Bcp3UknFTyO7TeAKGiU0tnK0b2dXsC_p5LBe5kPv5ioQAAAAHVliPiAA")
 STRING2 = getenv("STRING_SESSION2", None)
 STRING3 = getenv("STRING_SESSION3", None)
 STRING4 = getenv("STRING_SESSION4", None)
